@@ -1,0 +1,4 @@
+.dfx/
+build/
+node_modules/
+dist/
