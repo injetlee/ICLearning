@@ -50,7 +50,7 @@ actor Counter{
 
     public  query func http_request(request: HttpRequest): async HttpResponse  {
 
-        // var temp: Text = getHeaders(request);
+        // var temp: Text = getHeaders(request)
         { 
             body = Text.encodeUtf8("<html><body><h1>Hello " # request.url # " Current Counter is:</h1><span style='font-size:100px;color:red';'>" # Nat.toText(currentValue) # "</span></body></html>"  );
             headers = [];
