@@ -1,0 +1,18 @@
+type Time = int;
+type Person = principal;
+type Message = 
+ record {
+   author: text;
+   content: text;
+   time: Time;
+ };
+service : {
+  follow: (principal) -> ();
+  follows: () -> (vec Person) query;
+  get_name: () -> (opt text);
+  post: (text, text) -> ();
+  posts: () -> (vec Message) query;
+  resetFollows: () -> ();
+  set_name: (text) -> ();
+  timeline: () -> (vec Message);
+}
