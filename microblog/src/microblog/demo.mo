@@ -22,12 +22,19 @@ actor {
         #ok: Ok;
         #err: Err;
     };
-    public func retired(person: Person): async Result<Bool, Text>{
-        switch (person.gender){
-            case(#male) #ok(person.age >= 60);
-            case(#female) #ok(person.age >= 55);
-            case(#unspecified) #err("unknown");
-        }
+    // func retired(person: Person):  Result<Bool, Text>{
+    //     switch (person.gender){
+    //         case(#male) #ok(person.age >= 60);
+    //         case(#female) #ok(person.age >= 55);
+    //         case(#unspecified) #err("unknown");
+    //     }
+    // };
+    func retired(person: Person):  Result<Bool, Text>{
+    switch (person.gender){
+        case(#male) #ok(person.age >= 60);
+        case(#female) #ok(person.age >= 55);
+        case(#unspecified) #err("unknown");
+    }
     };
 
     object counter{
@@ -38,8 +45,8 @@ actor {
             inc();
             read();
         }
-    }
-    // var a = retired(person);
+    };
+    var a = retired(person);
     // D.print(Bool.toText(a))
 
 }
