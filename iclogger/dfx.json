@@ -1,0 +1,23 @@
+{
+  "canisters": {
+    "iclogger": {
+      "main": "src/iclogger/main.mo",
+      "type": "motoko"
+    }
+    
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "dfx": "0.8.4",
+  "networks": {
+    "local": {
+      "bind": "0.0.0.0:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
