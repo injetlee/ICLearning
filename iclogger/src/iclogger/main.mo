@@ -1,4 +1,3 @@
-import Logger  "Logger";
 import TextLogger "TextLogger";
 import Array "mo:base/Array";
 import List "mo:base/List";
@@ -8,28 +7,29 @@ import Iter "mo:base/Iter";
 actor {
     
   type TextLogger = TextLogger.TextLogger;
-  let cyclesShare = 10000000000;
+  let cycleShare = 10000000000;
   stable var totalMessages = 0;
-  var totalMessagesPerCani = 0;
+  stable var totalMessagesPerCani = 0;
   stable var canisterList = List.nil<TextLogger>();
 
-  // public shared func getTotal(): async Nat{
-  //   totalMessages;
-  // };
+  public shared func getTotal(): async Nat{
+    totalMessages;
+  };
 
 
 
-  // public shared func getCanli(): async [TextLogger]{
-  //   List.toArray(canisterList);
-  // };
+  public shared func getCanli(): async [TextLogger]{
+    List.toArray(canisterList);
+  };
 
 
-  // public shared func gettotalper(): async Nat{
-  //   totalMessagesPerCani;
-  // };
+  public shared func gettotalper(): async Nat{
+    totalMessagesPerCani;
+  };
 
   public shared (msg) func append(msgs: [Text]){
     if(totalMessagesPerCani % 100 == 0){
+      // Cycles.add(cycleShare);
       let sub = await TextLogger.TextLogger();
       canisterList := List.push(sub, canisterList);
       totalMessagesPerCani := 0;
@@ -62,7 +62,7 @@ actor {
      
     var resultArray : [var ?TextLogger] = Array.init(0,null);
     var temp: [Text] = [];
-    for (i in Iter.range(start, end + 1)){
+    for (i in Iter.range(start, end)){
       if(i < end and end > start){
         to_index := 99;
       }else{
