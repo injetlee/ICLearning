@@ -12,7 +12,7 @@ a := List.push("fff", a);
 // a.add("b");
 // a.add("c"):
 var b = List.toArray(List.reverse(a));
-b := Array.append(b,"xx");
+// b := Array.append(b,"xx");
 switch(List.get(a,2)){
     case(?a){
         D.print(a);
@@ -21,4 +21,4 @@ switch(List.get(a,2)){
          D.print("hellod");
     };
 };
-D.print(debug_show(b));
+D.print(debug_show(List.size(a)));
