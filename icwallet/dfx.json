@@ -3,19 +3,6 @@
     "icwallet": {
       "main": "src/icwallet/main.mo",
       "type": "motoko"
-    },
-    "icwallet_assets": {
-      "dependencies": [
-        "icwallet"
-      ],
-      "frontend": {
-        "entrypoint": "src/icwallet_assets/src/index.html"
-      },
-      "source": [
-        "src/icwallet_assets/assets",
-        "dist/icwallet_assets/"
-      ],
-      "type": "assets"
     }
   },
   "defaults": {
