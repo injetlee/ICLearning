@@ -1,0 +1,35 @@
+{
+  "canisters": {
+    "icwallet": {
+      "main": "src/icwallet/main.mo",
+      "type": "motoko"
+    },
+    "icwallet_assets": {
+      "dependencies": [
+        "icwallet"
+      ],
+      "frontend": {
+        "entrypoint": "src/icwallet_assets/src/index.html"
+      },
+      "source": [
+        "src/icwallet_assets/assets",
+        "dist/icwallet_assets/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "dfx": "0.8.4",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}

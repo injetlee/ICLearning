@@ -1,0 +1,29 @@
+type definite_canister_settings = 
+ record {
+   compute_allocation: nat;
+   controllers: vec principal;
+   freezing_threshold: nat;
+   memory_allocation: nat;
+ };
+type canister_id = principal;
+type anon_class_4_1 = 
+ service {
+   canister_status: (canister_id) ->
+    (record {
+       cycles: nat;
+       memory_size: nat;
+       module_hash: opt vec nat8;
+       settings: definite_canister_settings;
+       status: variant {
+                 running;
+                 stopped;
+                 stopping;
+               };
+     });
+   create_canister: () -> (canister_id);
+   delete_canister: (canister_id) -> ();
+   install_code: (vec nat8, vec nat8, canister_id) -> ();
+   start_canister: (canister_id) -> ();
+   stop_canister: (canister_id) -> ();
+ };
+service : () -> anon_class_4_1
