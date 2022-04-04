@@ -7,6 +7,7 @@ import Hash "mo:base/Hash";
 import List "mo:base/List";
 import Nat32 "mo:base/Nat32";
 import Iter "mo:base/Iter";
+import Cycles "mo:base/ExperimentalCycles";
 
 
 
@@ -62,7 +63,7 @@ actor class(m : Nat) = self {
             memory_allocation = null;
             compute_allocation = null;
         };
-        
+        Cycles.add(500000000000);
         let result = await ic.create_canister({settings = ?settings});
         result.canister_id;
     };
