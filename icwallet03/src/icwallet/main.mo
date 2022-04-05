@@ -8,12 +8,14 @@ import List "mo:base/List";
 import Nat32 "mo:base/Nat32";
 import Iter "mo:base/Iter";
 import Cycles "mo:base/ExperimentalCycles";
+import Array "mo:base/Array";
 
 
 
 
-actor class(m : Nat) = self {
+actor class(m : Nat, members : [Principal]) = self {
     type Result<T,E> = Result.Result<T,E>;
+
     type Proposal = {
         proposal_id : Nat;
         proposaler : Principal;
@@ -23,23 +25,31 @@ actor class(m : Nat) = self {
         payload : ProposalPayload;
         state : Text;
     };
+
     type ProposalPayload = {
         method: Text;
         canister_id: Principal;
         message : Blob;
     };
+
     type Vote = {#no; #yes};
+
     type VoteArgs = {
         vote : Vote; proposal_id : Nat
     };
-    type ProposalList = List.List<Proposal>;
+
+    private stable var canister_list : [Principal] = [];
+
     private stable var _proposal_list_state : [(Nat, Proposal)] = [];
+
     private func equal(x : Nat, y : Nat) : Bool{
         return Nat.equal(x,y);
     };
-        private func hash(x : Nat) : Hash.Hash{
+
+    private func hash(x : Nat) : Hash.Hash{
         return Nat32.fromNat(x);
     };
+
     var proposal_list : HashMap.HashMap<Nat, Proposal> = HashMap.fromIter(_proposal_list_state.vals(), 0, equal, hash);
 
     system func preupgrade(){
@@ -49,13 +59,10 @@ actor class(m : Nat) = self {
     system func postupgrade(){
         _proposal_list_state := [];
     };
-    let members_list : [Text] = [
-        "sdlj5-ueeya-lahix-hjmt6-liabp-4si6b-ey4la-i6hv6-ybi2v-4jk3x-wae",
-        "sdlj5-ueeya-lahix-hjmt6-liabp-4si6b-ey4la-i6hv6-ybi2v-4jk3x-wae",
-        "sdlj5-ueeya-lahix-hjmt6-liabp-4si6b-ey4la-i6hv6-ybi2v-4jk3x-wae",
-        "sdlj5-ueeya-lahix-hjmt6-liabp-4si6b-ey4la-i6hv6-ybi2v-4jk3x-wae"
-    ];
+
+    let members_list = members;
     let ic : IC.Self = actor("aaaaa-aa");
+
     public func create_canister() : async  IC.canister_id{
         let settings = {
             freezing_threshold = null;
@@ -63,8 +70,9 @@ actor class(m : Nat) = self {
             memory_allocation = null;
             compute_allocation = null;
         };
-        Cycles.add(500000000000);
+        Cycles.add(1_000_000_000_000);
         let result = await ic.create_canister({settings = ?settings});
+        canister_list := Array.append(canister_list, [result.canister_id]);
         result.canister_id;
     };
 
@@ -98,11 +106,19 @@ actor class(m : Nat) = self {
       }{
         await ic.canister_status({canister_id = canister_id});
     };
+
+    public query func get_canister_list() : async [Principal] {
+        canister_list;
+    };
+
+    public query func list_members() : async [Principal]{
+        members_list;
+    };
     //validate caller whether in the team member list
-    private func get_member(p: Principal) : Bool{
+    private func get_member(p: Principal, arr : [Principal]) : Bool{
         var flag = false;
-        for (m in members_list.vals()){
-            if (Principal.toText(p) == m){
+        for (m in arr.vals()){
+            if (p == m){
                 flag := true;
                 return flag;
             }
@@ -111,21 +127,10 @@ actor class(m : Nat) = self {
 
 
     };
-    //validate proposal whether in the proposal list
-    // private func get_proposal(p: Nat) : ?Proposal{
-    //     var result = null;
-    //     for (m in List.toArray(proposal_list).vals()){
-    //         if (p == m.proposal_id){
-    //             return ?m;
-    //         }
-    //     };
-    //     return result;
 
-
-    // };
     public shared({caller}) func submit_proposal(payload: ProposalPayload) : async Result<Nat, Text>  {
         //validate caller whether in the team member list
-        assert(get_member(caller) == true);
+        assert(get_member(caller, members_list) == true);
         let proposal : Proposal = {
             proposal_id = proposal_list.size() + 1;
             vote_yes = 0;
@@ -142,10 +147,13 @@ actor class(m : Nat) = self {
     };
 
     public shared({caller}) func vote(args : VoteArgs) : async Result<Nat, Text>{
-        assert(get_member(caller) == true);
+        assert(get_member(caller, members_list) == true);
         switch(proposal_list.get(args.proposal_id)){
             case null {return #err("No proposal with ID" # debug_show(args.proposal_id) # "exists")};
             case (?proposal){
+                if (get_member(caller, List.toArray(proposal.voter)) == true){
+                    return #err("this member has voted");
+                };
                 var vote_yes = proposal.vote_yes;
                 var vote_no = proposal.vote_no;
                 switch(args.vote){
